@@ -1,0 +1,32 @@
+library(readxl)
+Retail_sales_volume <- read_excel("~/Downloads/Retail sales volume.xlsx")
+View(Retail_sales_volume)  
+
+total_salesb <- Retail_sales_volume$Jan[c(1:32)]+ Retail_sales_volume$Feb[c(1:32)]+Retail_sales_volume$Mar[c(1:32)]+ Retail_sales_volume$Apr[c(1:32)]+ Retail_sales_volume$May[c(1:32)]+ Retail_sales_volume$Jun[c(1:32)] + Retail_sales_volume$Jul[c(1:32)]+ Retail_sales_volume$Aug[c(1:32)] + Retail_sales_volume$Sep[c(1:32)]+Retail_sales_volume$Oct[c(1:32)]+Retail_sales_volume$Nov[c(1:32)]+Retail_sales_volume$Dec[c(1:32)]
+
+#OLS regression
+delay_1b_data <- Retail_sales_volume$Jul[c(1:32)]+ Retail_sales_volume$Aug[c(1:32)] + Retail_sales_volume$Sep[c(1:32)]+Retail_sales_volume$Oct[c(1:32)]+Retail_sales_volume$Nov[c(1:32)]+Retail_sales_volume$Dec[c(1:32)]
+total_delay_1b <- data.frame(total_salesb, delay_1b_data)
+delay_1b_reg<- lm(total_salesb~delay_1b_data, data=Retail_sales_volume) 
+summary(delay_1b_reg)
+
+B0 <-coef(delay_1b_reg)[1]
+B1 <- coef(delay_1b_reg)[2]
+
+
+#OLS estimate:
+
+OLS_delay_1b <- B0 + B1*(delay_1b_data)
+
+#Mean absolute percentage error
+OLS_prediction_error_vector_1b<-((OLS_delay_1b-total_sales)/total_sales) *100
+OLS_prediction_error_vector_1b
+mean_OLS_error_1b<-mean(abs(OLS_prediction_error_vector_1))
+mean_OLS_error_1b
+
+#Homoskedasticity test
+install.packages("car", dependencies = TRUE)
+library(car)
+ncvTest(delay_1b_reg)
+install.packages("lmtest", dependencies = TRUE)
+lmtest::bptest(delay_1b_reg)
